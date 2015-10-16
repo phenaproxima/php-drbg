@@ -12,5 +12,11 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "phenaproxima\\": "src"
+        }
+    },
+    "keywords": ["crypto", "drbg", "cryptography", "hash", "sha256"]
 }
