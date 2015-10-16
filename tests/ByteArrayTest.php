@@ -71,14 +71,14 @@ class ByteArrayTest extends \PHPUnit_Framework_TestCase {
    * @covers ::prepend
    */
   public function testPrepend() {
-    $this->assertEquals('!?Kronos', ByteArray::create('Kronos')->prepend('!', '?')->toBinaryString());
+    $this->assertEquals('!?Kronos', ByteArray::create('Kronos')->prepend([33], '?')->toBinaryString());
   }
 
   /**
    * @covers ::append
    */
   public function testAppend() {
-    $this->assertEquals('KronosPleaseSir', ByteArray::create('Kronos')->append('Please', 'Sir')->toBinaryString());
+    $this->assertEquals('KronosPlease?', ByteArray::create('Kronos')->append('Please', [63])->toBinaryString());
   }
 
   /**
