@@ -1,0 +1,16 @@
+{
+    "name": "phenaproxima/hmac-drbg",
+    "description": "A deterministic random bit generator (DRBG) for PHP.",
+    "require-dev": {
+        "phpunit/phpunit": "4.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Phéna Proxima",
+            "email": "djphenaproxima@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
