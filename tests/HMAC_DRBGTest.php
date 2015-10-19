@@ -83,35 +83,37 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @dataProvider vectors
+   * @dataProvider nist
    */
-  public function testNIST($count, $entropy, $nonce, $personalizer, $entropy_reseed, $extra_reseed, $extra1, $extra2, $return) {
+  public function testNIST($count, $entropy_input, $nonce, $personalization, $entropy_input_reseed, $additional_input_reseed, $additional_input_1, $additional_input_2, $returned_bits) {
+    if ($additional_input_reseed || $additional_input_1 || $additional_input_2) {
+      $this->markTestSkipped();
+    }
+    else {
+    }
   }
 
-  protected function toBinary($hex) {
-    $arguments = array_map('hexdec', str_split($hex, 2));
+  protected function decodeHex($input) {
+    $arguments = array_map('hexdec', str_split($input, 2));
     array_unshift($arguments, 'C*');
     return call_user_func_array('pack', $arguments);
   }
 
-  public function vectors() {
-    $vectors = $vector = [];
-
+  public function nist() {
+    $vectors = $v = array();
     $file = fopen(__DIR__ . '/vectors.txt', 'r');
     while ($line = fgets($file)) {
       $line = trim($line);
-
       if ($line) {
-        $line = explode(' = ', $line);
-        $vector[] = isset($line[1]) ? $line[1] : NULL;
+        @list (, $value) = explode(' = ', $line);
+        array_push($v, $value);
       }
       else {
-        array_push($vectors, $vector);
-        $vector = [];
+        array_push($vectors, $v);
+        $v = array();
       }
     }
     fclose($file);
-
     return $vectors;
   }
 
