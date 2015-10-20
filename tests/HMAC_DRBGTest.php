@@ -7,8 +7,6 @@ namespace phenaproxima;
  */
 class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
 
-  protected $algorithm;
-
   /**
    * @expectedException \OutOfBoundsException
    * @expectedExceptionMessage Strength cannot exceed 256 bits.
@@ -92,19 +90,27 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
     }
 
     // Decode all the input arguments into binary strings.
-    $entropy_input = ByteArray::fromHexString($entropy_input)->toBinaryString();
-    $nonce = ByteArray::fromHexString($nonce)->toBinaryString();
-    $personalization = ByteArray::fromHexString($personalization)->toBinaryString();
-    $entropy_input_reseed = ByteArray::fromHexString($entropy_input_reseed)->toBinaryString();
-    $returned_bits = ByteArray::fromHexString($returned_bits)->toBinaryString();
+    $entropy_input = $this->decodeHex($entropy_input);
+    $nonce = $this->decodeHex($nonce);
+    $personalization = $this->decodeHex($personalization);
+    $entropy_input_reseed = $this->decodeHex($entropy_input_reseed);
+    $returned_bits = $this->decodeHex($returned_bits);
 
     $length = strlen($returned_bits);
     $drbg = new HMAC_DRBG($entropy_input . $nonce, 256, $personalization);
     $drbg->reseed($entropy_input_reseed);
     $drbg->generate($length);
-    $hash = $drbg->generate($length)->toBinaryString();
+    $hash = $drbg->generate($length);
 
     $this->assertEquals($returned_bits, substr($hash, 0, $length));
+  }
+
+  protected function decodeHex($hex) {
+    if ($hex) {
+      $arguments = array_map('hexdec', str_split($hex, 2));
+      array_unshift($arguments, 'C*');
+      return call_user_func_array('pack', $arguments);
+    }
   }
 
   public function nist() {

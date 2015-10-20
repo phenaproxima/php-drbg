@@ -12,12 +12,12 @@ class HMAC_DRBG {
   protected $strength;
 
   /**
-   * @var ByteArray
+   * @var string
    */
   protected $k;
 
   /**
-   * @var ByteArray
+   * @var string
    */
   protected $v;
 
@@ -69,24 +69,29 @@ class HMAC_DRBG {
       throw new \LengthException('Entropy cannot exceed 1000 bits.');
     }
 
-    $this->k = new ByteArray(array_fill(0, 32, 0x0));
-    $this->v = new ByteArray(array_fill(0, 32, 0x1));
+    $this->k = $this->repeatByte(0x0, 32);
+    $this->v = $this->repeatByte(0x1, 32);
     $this->update($entropy . $personalizer);
+  }
+
+  protected function repeatByte($byte, $length) {
+    $arguments = array_fill(0, $length, $byte);
+    array_unshift($arguments, 'C*');
+    return call_user_func_array('pack', $arguments);
   }
 
   /**
    * Creates an HMAC hash.
    *
-   * @param ByteArray $key
-   *   The binary hash key, wrapped in a ByteArray.
-   * @param ByteArray $data
-   *   The binary data to hash, wrapped in a ByteArray.
+   * @param string $key
+   *   The binary hash key.
+   * @param string $data
+   *   The binary data to hash.
    *
-   * @return ByteArray
+   * @return string
    */
-  protected function HMAC(ByteArray $key, ByteArray $data) {
-    $hash = hash_hmac('sha256', $data->toBinaryString(), $key->toBinaryString(), TRUE);
-    return ByteArray::create($hash);
+  protected function HMAC($key, $data) {
+    return hash_hmac('sha256', $data, $key, TRUE);
   }
 
   /**
@@ -96,11 +101,11 @@ class HMAC_DRBG {
    *   (optional) Binary data to update with.
    */
   protected function update($data = NULL) {
-    $this->k = $this->HMAC($this->k, $this->v->copy()->append([0x0], $data));
+    $this->k = $this->HMAC($this->k, $this->v . pack('C', 0x0) . $data);
     $this->v = $this->HMAC($this->k, $this->v);
 
     if ($data) {
-      $this->k = $this->HMAC($this->k, $this->v->copy()->append([0x1], $data));
+      $this->k = $this->HMAC($this->k, $this->v . pack('C', 0x1) . $data);
       $this->v = $this->HMAC($this->k, $this->v);
     }
   }
@@ -135,7 +140,7 @@ class HMAC_DRBG {
    * @param int $strength
    *   (optional) Hash strength; defaults to 256 bits. Not currently used.
    *
-   * @return ByteArray
+   * @return string
    *
    * @throws \InvalidArgumentException if $length is greater than 7500 bits.
    * @throws \OutOfBoundsException if $strength is greater than the configured
@@ -150,13 +155,11 @@ class HMAC_DRBG {
     }
 
     if ($this->reseedCount < 10000) {
-      $bytes = new ByteArray();
-
-      while (sizeof($bytes) < $length) {
+      $bytes = '';
+      while (strlen($bytes) < $length) {
         $this->v = $this->HMAC($this->k, $this->v);
-        $bytes->append($this->v);
+        $bytes .= $this->v;
       }
-
       $this->update();
       $this->reseedCount++;
 
