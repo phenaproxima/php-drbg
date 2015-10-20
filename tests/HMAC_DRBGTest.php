@@ -86,21 +86,40 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
    * @dataProvider nist
    */
   public function testNIST($count, $entropy_input, $nonce, $personalization, $entropy_input_reseed, $additional_input_reseed, $additional_input_1, $additional_input_2, $returned_bits) {
+    // The DRBG implementation doesn't support additional input.
     if ($additional_input_reseed || $additional_input_1 || $additional_input_2) {
       $this->markTestSkipped();
     }
-    else {
-    }
+
+    // Decode all the input arguments into binary strings.
+    $entropy_input = $this->decodeHex($entropy_input);
+    $nonce = $this->decodeHex($nonce);
+    $personalization = $this->decodeHex($personalization);
+    $entropy_input_reseed = $this->decodeHex($entropy_input_reseed);
+    $returned_bits = $this->decodeHex($returned_bits);
+
+    $length = strlen($returned_bits);
+    $drbg = new HMAC_DRBG($entropy_input . $nonce, 256, $personalization);
+    $drbg->reseed($entropy_input_reseed);
+    $drbg->generate($length);
+    $hash = $drbg->generate($length)->toBinaryString();
+
+    $this->assertEquals($returned_bits, substr($hash, 0, $length));
   }
 
   protected function decodeHex($input) {
-    $arguments = array_map('hexdec', str_split($input, 2));
-    array_unshift($arguments, 'C*');
-    return call_user_func_array('pack', $arguments);
+    // If $input is empty, str_split() will produce array(''), which will throw
+    // a monkey wrench into the DRBG.
+    if ($input) {
+      $arguments = array_map('hexdec', str_split($input, 2));
+      array_unshift($arguments, 'C*');
+      return call_user_func_array('pack', $arguments);
+    }
   }
 
   public function nist() {
     $vectors = $v = array();
+
     $file = fopen(__DIR__ . '/vectors.txt', 'r');
     while ($line = fgets($file)) {
       $line = trim($line);
@@ -114,6 +133,7 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
       }
     }
     fclose($file);
+
     return $vectors;
   }
 
