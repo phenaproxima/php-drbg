@@ -9,11 +9,23 @@ class ByteArray implements \Countable {
    */
   protected $bytes = [];
 
+  /**
+   * Constructs a ByteArray.
+   *
+   * @param int[] $bytes
+   *  (optional) Array of bytes, represented as integers.
+   */
   public function __construct(array $bytes = []) {
     $this->bytes = $bytes;
   }
 
   /**
+   * Creates a ByteArray.
+   *
+   * @param static|string|array $bytes
+   *   Array of input bytes. Can be a ByteArray, a binary string, or an array
+   *   of bytes represented as integers.
+   *
    * @return static
    */
   public static function create($bytes) {
@@ -28,6 +40,9 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Clones the ByteArray. This is just a utility method to provide a fluent
+   * interface.
+   *
    * @return static
    */
   public function copy() {
@@ -35,6 +50,8 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Returns the raw bytes wrapped by this ByteArray, represented as integers.
+   *
    * @return int[]
    */
   public function getBytes() {
@@ -43,6 +60,8 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Returns the byte array as a binary string.
+   *
    * @return string
    */
   public function toBinaryString() {
@@ -51,6 +70,8 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Returns the byte array as an array of two-digit hex values.
+   *
    * @return string[]
    */
   public function toHexArray() {
@@ -61,6 +82,8 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Returns the byte array as a hex-encoded string.
+   *
    * @return string
    */
   public function toHexString() {
@@ -68,6 +91,12 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Prepends bytes to the array.
+   *
+   * @param mixed $value, [$value [...]]
+   *   The value(s) to prepend. Each value can be a ByteArray, a binary string,
+   *   or an array of bytes represented as integers.
+   *
    * @return $this
    */
   public function prepend() {
@@ -80,6 +109,12 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Appends bytes to the array.
+   *
+   * @param mixed $value, [$value, [...]]
+   *   The value(s) to append. Each value can be a ByteArray, a binary string,
+   *   or an array of bytes represented as integers.
+   *
    * @return $this
    */
   public function append() {
@@ -90,6 +125,8 @@ class ByteArray implements \Countable {
   }
 
   /**
+   * Returns the size of the byte array.
+   *
    * @return int
    */
   public function count() {
