@@ -47,10 +47,11 @@ class ByteArray implements \Countable {
    * @return static
    */
   public static function fromHexString($hex) {
+    // If $hex is empty, str_split() will produce [''].
     if ($hex) {
       $hex = array_map('hexdec', str_split($hex, 2));
     }
-    return new static($hex);
+    return new static((array) $hex);
   }
 
   /**

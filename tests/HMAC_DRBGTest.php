@@ -92,11 +92,11 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
     }
 
     // Decode all the input arguments into binary strings.
-    $entropy_input = $this->decodeHex($entropy_input);
-    $nonce = $this->decodeHex($nonce);
-    $personalization = $this->decodeHex($personalization);
-    $entropy_input_reseed = $this->decodeHex($entropy_input_reseed);
-    $returned_bits = $this->decodeHex($returned_bits);
+    $entropy_input = ByteArray::fromHexString($entropy_input)->toBinaryString();
+    $nonce = ByteArray::fromHexString($nonce)->toBinaryString();
+    $personalization = ByteArray::fromHexString($personalization)->toBinaryString();
+    $entropy_input_reseed = ByteArray::fromHexString($entropy_input_reseed)->toBinaryString();
+    $returned_bits = ByteArray::fromHexString($returned_bits)->toBinaryString();
 
     $length = strlen($returned_bits);
     $drbg = new HMAC_DRBG($entropy_input . $nonce, 256, $personalization);
@@ -105,16 +105,6 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
     $hash = $drbg->generate($length)->toBinaryString();
 
     $this->assertEquals($returned_bits, substr($hash, 0, $length));
-  }
-
-  protected function decodeHex($input) {
-    // If $input is empty, str_split() will produce array(''), which will throw
-    // a monkey wrench into the DRBG.
-    if ($input) {
-      $arguments = array_map('hexdec', str_split($input, 2));
-      array_unshift($arguments, 'C*');
-      return call_user_func_array('pack', $arguments);
-    }
   }
 
   public function nist() {
