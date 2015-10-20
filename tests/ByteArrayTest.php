@@ -39,6 +39,13 @@ class ByteArrayTest extends \PHPUnit_Framework_TestCase {
   }
 
   /**
+   * @covers ::fromHexString
+   */
+  public function testFromHexString() {
+    $this->assertEquals('Kronos', ByteArray::fromHexString('4b726f6e6f73')->toBinaryString());
+  }
+
+  /**
    * @covers ::getBytes
    */
   public function testGetBytes() {

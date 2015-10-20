@@ -35,8 +35,22 @@ class ByteArray implements \Countable {
     elseif (is_string($bytes)) {
       $bytes = unpack('C*', $bytes);
     }
-
     return new static(is_array($bytes) ? $bytes : []);
+  }
+
+  /**
+   * Creates a ByteArray from a hex-encoded string.
+   *
+   * @param string $hex
+   *   A string of hex-encoded bytes.
+   *
+   * @return static
+   */
+  public static function fromHexString($hex) {
+    if ($hex) {
+      $hex = array_map('hexdec', str_split($hex, 2));
+    }
+    return new static($hex);
   }
 
   /**
