@@ -114,23 +114,7 @@ class HMAC_DRBGTest extends \PHPUnit_Framework_TestCase {
   }
 
   public function nist() {
-    $vectors = $v = array();
-
-    $file = fopen(__DIR__ . '/vectors.txt', 'r');
-    while ($line = fgets($file)) {
-      $line = trim($line);
-      if ($line) {
-        @list (, $value) = explode(' = ', $line);
-        array_push($v, $value);
-      }
-      else {
-        array_push($vectors, $v);
-        $v = array();
-      }
-    }
-    fclose($file);
-
-    return $vectors;
+    return json_decode(file_get_contents(__DIR__ . '/vectors.json'));
   }
 
 }
