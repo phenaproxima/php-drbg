@@ -1,6 +1,9 @@
 {
     "name": "phenaproxima/hmac-drbg",
     "description": "A deterministic random bit generator (DRBG) for PHP.",
+    "require": {
+        "php": ">=5.4"
+    },
     "require-dev": {
         "phpunit/phpunit": "4.*"
     },
